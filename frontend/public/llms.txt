@@ -1,0 +1,13 @@
+# ArenaMind Interactive Systems
+
+ArenaMind is a next-generation smart stadium platform designed to optimize crowd flow, enhance fan accessibility, and promote sustainable transit for large-scale events.
+
+## Features
+- Interactive Spatial Wayfinding
+- Telemetry & Staff Operations
+- Accessible Routing
+
+## Links
+- [Wayfinding Portal](/fan/wayfinding)
+- [Staff Operations](/staff/telemetry)
+- [Documentation](/docs)

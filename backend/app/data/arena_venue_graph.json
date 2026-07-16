@@ -1,0 +1,75 @@
+{
+  "nodes": {
+    "Gate North": { "type": "entry", "accessible": true, "x": 500, "y": 50 },
+    "Gate South": { "type": "entry", "accessible": true, "x": 500, "y": 750 },
+    "Gate East": { "type": "entry", "accessible": false, "x": 950, "y": 400 },
+    "Gate West": { "type": "entry", "accessible": true, "x": 50, "y": 400 },
+    
+    "Concourse 100 - North": { "type": "corridor", "accessible": true, "x": 500, "y": 150 },
+    "Concourse 100 - South": { "type": "corridor", "accessible": true, "x": 500, "y": 650 },
+    "Concourse 200 - North": { "type": "corridor", "accessible": true, "x": 500, "y": 250 },
+    "Concourse 200 - South": { "type": "corridor", "accessible": true, "x": 500, "y": 550 },
+    "VIP Concourse": { "type": "corridor", "accessible": true, "x": 250, "y": 550 },
+
+    "Elevator Bank 1 (North)": { "type": "transit", "accessible": true, "x": 400, "y": 150 },
+    "Elevator Bank 2 (South)": { "type": "transit", "accessible": true, "x": 400, "y": 650 },
+    "Grand Staircase (North)": { "type": "transit", "accessible": false, "x": 600, "y": 150 },
+    "Grand Staircase (South)": { "type": "transit", "accessible": false, "x": 600, "y": 650 },
+
+    "Section 101": { "type": "seating", "accessible": true, "x": 500, "y": 300 },
+    "Section 102": { "type": "seating", "accessible": true, "x": 600, "y": 300 },
+    "Section 105": { "type": "seating", "accessible": true, "x": 500, "y": 500 },
+    "Section 201": { "type": "seating", "accessible": true, "x": 500, "y": 350 },
+    "Section 205": { "type": "seating", "accessible": true, "x": 500, "y": 450 },
+    "VIP Suite A": { "type": "seating", "accessible": true, "x": 300, "y": 500 },
+    "VIP Suite B": { "type": "seating", "accessible": true, "x": 200, "y": 500 },
+
+    "Restrooms 100": { "type": "facility", "accessible": true, "x": 700, "y": 150 },
+    "Restrooms 200": { "type": "facility", "accessible": true, "x": 700, "y": 550 },
+    "First Aid 100": { "type": "medical", "accessible": true, "x": 300, "y": 150 },
+    "First Aid 200": { "type": "medical", "accessible": true, "x": 300, "y": 250 },
+    "Merchandise MegaStore": { "type": "retail", "accessible": true, "x": 700, "y": 650 },
+    "Food Court 100": { "type": "retail", "accessible": true, "x": 300, "y": 650 },
+    "Premium Dining 200": { "type": "retail", "accessible": true, "x": 700, "y": 250 }
+  },
+  "edges": [
+    { "source": "Gate North", "target": "Concourse 100 - North", "distance": 50, "step_free": true },
+    { "source": "Gate South", "target": "Concourse 100 - South", "distance": 50, "step_free": true },
+    { "source": "Gate East", "target": "Concourse 100 - North", "distance": 80, "step_free": false },
+    { "source": "Gate West", "target": "Concourse 100 - South", "distance": 80, "step_free": true },
+    
+    { "source": "Concourse 100 - North", "target": "Concourse 100 - South", "distance": 200, "step_free": true },
+    { "source": "Concourse 200 - North", "target": "Concourse 200 - South", "distance": 200, "step_free": true },
+
+    { "source": "Concourse 100 - North", "target": "Elevator Bank 1 (North)", "distance": 20, "step_free": true },
+    { "source": "Elevator Bank 1 (North)", "target": "Concourse 200 - North", "distance": 5, "step_free": true },
+    { "source": "Elevator Bank 1 (North)", "target": "VIP Concourse", "distance": 5, "step_free": true },
+
+    { "source": "Concourse 100 - South", "target": "Elevator Bank 2 (South)", "distance": 20, "step_free": true },
+    { "source": "Elevator Bank 2 (South)", "target": "Concourse 200 - South", "distance": 5, "step_free": true },
+
+    { "source": "Concourse 100 - North", "target": "Grand Staircase (North)", "distance": 15, "step_free": true },
+    { "source": "Grand Staircase (North)", "target": "Concourse 200 - North", "distance": 40, "step_free": false },
+    { "source": "Concourse 100 - South", "target": "Grand Staircase (South)", "distance": 15, "step_free": true },
+    { "source": "Grand Staircase (South)", "target": "Concourse 200 - South", "distance": 40, "step_free": false },
+
+    { "source": "Concourse 100 - North", "target": "Section 101", "distance": 30, "step_free": true },
+    { "source": "Concourse 100 - North", "target": "Section 102", "distance": 50, "step_free": true },
+    { "source": "Concourse 100 - South", "target": "Section 105", "distance": 40, "step_free": true },
+    { "source": "Concourse 200 - North", "target": "Section 201", "distance": 35, "step_free": true },
+    { "source": "Concourse 200 - South", "target": "Section 205", "distance": 45, "step_free": true },
+
+    { "source": "VIP Concourse", "target": "VIP Suite A", "distance": 20, "step_free": true },
+    { "source": "VIP Concourse", "target": "VIP Suite B", "distance": 40, "step_free": true },
+
+    { "source": "Concourse 100 - North", "target": "Restrooms 100", "distance": 25, "step_free": true },
+    { "source": "Concourse 200 - South", "target": "Restrooms 200", "distance": 30, "step_free": true },
+    
+    { "source": "Concourse 100 - South", "target": "First Aid 100", "distance": 60, "step_free": true },
+    { "source": "Concourse 200 - North", "target": "First Aid 200", "distance": 70, "step_free": true },
+
+    { "source": "Concourse 100 - South", "target": "Merchandise MegaStore", "distance": 100, "step_free": true },
+    { "source": "Concourse 100 - North", "target": "Food Court 100", "distance": 80, "step_free": true },
+    { "source": "Concourse 200 - North", "target": "Premium Dining 200", "distance": 50, "step_free": true }
+  ]
+}
