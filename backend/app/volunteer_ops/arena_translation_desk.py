@@ -37,8 +37,10 @@ async def process_fan_request(interaction: FanInteraction) -> ActionableTask:
     if sanitized_transcript in _TRANSLATION_CACHE:
         return _TRANSLATION_CACHE[sanitized_transcript]
 
-    # Prompt engineering designed specifically to force JSON output and act as a stadium triage system
-    prompt = f"""<s>[INST] You are a triage AI for stadium operations.
+    prompt = f"""<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+You are a triage AI for stadium operations.<|eot_id|><|start_header_id|>user<|end_header_id|>
+
 Analyze the following raw radio transcript from {interaction.location_zone}.
 
 Transcript: "{sanitized_transcript}"
@@ -50,8 +52,9 @@ Assign the required staff role: MEDICAL, SECURITY, JANITORIAL, or SUPERVISOR.
 Output ONLY a valid JSON object with the keys:
 - translated_english_summary
 - priority_level
-- required_staff_role
-[/INST]"""
+- required_staff_role<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+"""
 
     try:
         api_key = os.environ.get("WATSONX_API_KEY")
@@ -67,9 +70,14 @@ Output ONLY a valid JSON object with the keys:
         }
 
         model = ModelInference(
-            model_id="mistralai/mistral-small-3-1-24b-instruct-2503",
+            model_id="meta-llama/llama-3-3-70b-instruct",
             credentials=credentials,
-            project_id=project_id
+            project_id=project_id,
+            params={
+                "decoding_method": "greedy",
+                "max_new_tokens": 150,
+                "stop_sequences": ["<|eot_id|>"]
+            }
         )
         
         response_text = str(model.generate_text(prompt=prompt))

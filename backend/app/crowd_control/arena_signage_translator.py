@@ -28,13 +28,19 @@ async def generate_multilingual_signage(alert: CongestionAlert, target_language:
     if cache_key in _SIGNAGE_CACHE:
         return _SIGNAGE_CACHE[cache_key]
     
-    prompt = (
-        f"You are a stadium digital signage system. You must generate a polite, "
-        f"maximum 150-character message in {target_language}. Inform fans that their "
-        f"current sector ({alert.sector_id}) is congested and direct them to the "
-        f"following recommended routes: {diversion_gates_str}. "
-        f"Do NOT invent new gates or include external information."
-    )
+    message = f"Sector {alert.sector_id} is congested. Please proceed to: {diversion_gates_str}."
+    prompt = f"""<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+
+You are an emergency signage translation system.<|eot_id|><|start_header_id|>user<|end_header_id|>
+
+Translate the following emergency message into {target_language}.
+Original message: {message}
+
+STRICT RULES:
+1. Return ONLY the translated string.
+2. Do not include quotes, prefixes, or conversational text.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
+"""
     
     try:
         api_key = os.environ.get("WATSONX_API_KEY")
@@ -50,13 +56,13 @@ async def generate_multilingual_signage(alert: CongestionAlert, target_language:
         }
 
         model = ModelInference(
-            model_id="mistralai/mistral-small-3-1-24b-instruct-2503",
+            model_id="meta-llama/llama-3-3-70b-instruct",
             credentials=credentials,
             project_id=project_id,
             params={
                 "decoding_method": "greedy",
-                "max_new_tokens": 150,
-                "repetition_penalty": 1.1
+                "max_new_tokens": 100,
+                "stop_sequences": ["<|eot_id|>"]
             }
         )
         

@@ -77,16 +77,17 @@ async def process_fan_query(query: FanQuery):
             "apikey": api_key
         }
         
-        prompt_with_constraints = f"<s>[INST] {prompt}\n\n{module_constraints} [/INST]"
+        prompt_with_constraints = f"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nYou are an AI assistant.<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n{prompt}\n\n{module_constraints}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
 
         model = ModelInference(
-            model_id="mistralai/mistral-small-3-1-24b-instruct-2503",
+            model_id="meta-llama/llama-3-3-70b-instruct",
             credentials=credentials,
             project_id=project_id,
             params={
                 "decoding_method": "greedy",
                 "max_new_tokens": max_tokens,
-                "repetition_penalty": 1.2
+                "repetition_penalty": 1.1,
+                "stop_sequences": ["<|eot_id|>"]
             }
         )
         response_text = str(model.generate_text(prompt_with_constraints))
