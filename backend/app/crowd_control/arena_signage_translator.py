@@ -29,18 +29,14 @@ async def generate_multilingual_signage(alert: CongestionAlert, target_language:
         return _SIGNAGE_CACHE[cache_key]
     
     message = f"Sector {alert.sector_id} is congested. Please proceed to: {diversion_gates_str}."
-    prompt = f"""<|begin_of_text|><|start_header_id|>system<|end_header_id|>
-
-You are an emergency signage translation system.<|eot_id|><|start_header_id|>user<|end_header_id|>
-
-Translate the following emergency message into {target_language}.
+    prompt = f"""System: You are an emergency signage translation system.
+User: Translate the following emergency message into {target_language}.
 Original message: {message}
 
 STRICT RULES:
 1. Return ONLY the translated string.
-2. Do not include quotes, prefixes, or conversational text.<|eot_id|><|start_header_id|>assistant<|end_header_id|>
-
-"""
+2. Do not include quotes, prefixes, or conversational text.
+Assistant:"""
     
     try:
         api_key = os.environ.get("WATSONX_API_KEY")
@@ -56,13 +52,12 @@ STRICT RULES:
         }
 
         model = ModelInference(
-            model_id="meta-llama/llama-3-3-70b-instruct",
+            model_id="ibm/granite-4-h-small",
             credentials=credentials,
             project_id=project_id,
             params={
                 "decoding_method": "greedy",
-                "max_new_tokens": 100,
-                "stop_sequences": ["<|eot_id|>"]
+                "max_new_tokens": 100
             }
         )
         
