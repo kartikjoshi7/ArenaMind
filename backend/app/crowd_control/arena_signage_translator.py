@@ -50,7 +50,7 @@ async def generate_multilingual_signage(alert: CongestionAlert, target_language:
         }
 
         model = ModelInference(
-            model_id="meta-llama/llama-3-1-8b",
+            model_id="mistralai/mistral-small-3-1-24b-instruct-2503",
             credentials=credentials,
             project_id=project_id,
             params={
