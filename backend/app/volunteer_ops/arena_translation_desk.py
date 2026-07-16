@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 
 from ibm_watsonx_ai.foundation_models import ModelInference
 from pydantic import ValidationError
@@ -25,8 +26,6 @@ async def process_fan_request(interaction: FanInteraction) -> ActionableTask:
         ActionableTask: A strictly typed, categorized operational task for stadium staff.
     """
     
-import re
-
     # Security: Input Sanitization to prevent Prompt Injection & Token Exhaustion
     # Strip dangerous characters and enforce a hard limit of 250 chars
     sanitized_transcript = re.sub(r'[<>{}\[\]]', '', interaction.raw_audio_transcript)
