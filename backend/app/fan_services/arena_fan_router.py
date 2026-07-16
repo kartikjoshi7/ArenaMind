@@ -77,7 +77,7 @@ async def process_fan_query(query: FanQuery):
             "apikey": api_key
         }
         
-        prompt_with_constraints = f"{prompt}\n{module_constraints}"
+        prompt_with_constraints = f"<s>[INST] {prompt}\n\n{module_constraints} [/INST]"
 
         model = ModelInference(
             model_id="mistralai/mistral-small-3-1-24b-instruct-2503",

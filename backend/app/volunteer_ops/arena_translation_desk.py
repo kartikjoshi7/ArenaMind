@@ -38,21 +38,20 @@ async def process_fan_request(interaction: FanInteraction) -> ActionableTask:
         return _TRANSLATION_CACHE[sanitized_transcript]
 
     # Prompt engineering designed specifically to force JSON output and act as a stadium triage system
-    prompt = f"""
-You are an expert stadium triage dispatcher for the FIFA 2026 World Cup.
-Your job is to analyze the following fan interaction, translate it to English, and assign an operational task.
+    prompt = f"""<s>[INST] You are a triage AI for stadium operations.
+Analyze the following raw radio transcript from {interaction.location_zone}.
 
-Fan Request (Raw Transcript): "{sanitized_transcript}"
-Location: {interaction.location_zone}
-Detected Language: {interaction.detected_language or 'Unknown'}
+Transcript: "{sanitized_transcript}"
 
-You must return your response STRICTLY as a raw JSON object matching the following structure exactly.
-{{
-  "translated_english_summary": "Short actionable english summary",
-  "priority_level": "LOW", // MUST be exactly one of: LOW, MEDIUM, HIGH, CRITICAL
-  "required_staff_role": "SECURITY" // e.g., MEDICAL, SECURITY, USHER, CLEANING, MAINTENANCE, SUPERVISOR
-}}
-"""
+Translate the summary to English if it is in another language.
+Assign a priority level: LOW, MEDIUM, HIGH, or CRITICAL.
+Assign the required staff role: MEDICAL, SECURITY, JANITORIAL, or SUPERVISOR.
+
+Output ONLY a valid JSON object with the keys:
+- translated_english_summary
+- priority_level
+- required_staff_role
+[/INST]"""
 
     try:
         api_key = os.environ.get("WATSONX_API_KEY")
