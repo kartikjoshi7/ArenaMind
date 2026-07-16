@@ -80,7 +80,7 @@ async def process_fan_query(query: FanQuery):
         prompt_with_constraints = f"{prompt}\n{module_constraints}"
 
         model = ModelInference(
-            model_id="meta-llama/llama-3-3-70b-instruct",
+            model_id="meta-llama/llama-3-8b-instruct",
             credentials=credentials,
             project_id=project_id,
             params={

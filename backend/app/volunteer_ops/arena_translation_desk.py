@@ -68,7 +68,7 @@ You must return your response STRICTLY as a raw JSON object matching the followi
         }
 
         model = ModelInference(
-            model_id="meta-llama/llama-3-3-70b-instruct",
+            model_id="meta-llama/llama-3-8b-instruct",
             credentials=credentials,
             project_id=project_id
         )
