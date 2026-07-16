@@ -97,7 +97,7 @@ export default function FanWayfinding({ globalLanguage }) {
             <div style={{ position: 'relative' }}>
               <div style={{ marginBottom: '1.5rem' }}>
                 <label htmlFor="origin-select" className="input-label" style={{ fontSize: '0.75rem', fontWeight: '600' }}>Origin</label>
-                <select id="origin-select" className="radio-input" style={{ width: '100%', height: '42px', fontSize: '0.9rem', padding: '0 1rem' }} value={navOrigin} onChange={e => setNavOrigin(e.target.value)}>
+                <select id="origin-select" className="radio-input" style={{ width: '100%', height: '42px', fontSize: '0.9rem', padding: '0 1rem' }} value={navOrigin} onChange={e => setNavOrigin(e.target.value)} aria-label="Select Origin Location">
                   <LocationOptions />
                 </select>
               </div>
@@ -110,6 +110,7 @@ export default function FanWayfinding({ globalLanguage }) {
                   setNavDest(temp);
                 }}
                 title="Swap Origin and Destination"
+                aria-label="Swap Origin and Destination"
                 style={{
                   position: 'absolute',
                   top: '50%',
@@ -134,7 +135,7 @@ export default function FanWayfinding({ globalLanguage }) {
 
               <div>
                 <label htmlFor="dest-select" className="input-label" style={{ fontSize: '0.75rem', fontWeight: '600' }}>Destination</label>
-                <select id="dest-select" className="radio-input" style={{ width: '100%', height: '42px', fontSize: '0.9rem', padding: '0 1rem' }} value={navDest} onChange={e => setNavDest(e.target.value)}>
+                <select id="dest-select" className="radio-input" style={{ width: '100%', height: '42px', fontSize: '0.9rem', padding: '0 1rem' }} value={navDest} onChange={e => setNavDest(e.target.value)} aria-label="Select Destination Location">
                   <LocationOptions />
                 </select>
               </div>
@@ -142,7 +143,7 @@ export default function FanWayfinding({ globalLanguage }) {
 
             <div style={{ display: 'flex', alignItems: 'center', height: '42px' }}>
               <label className="checkbox-label" style={{ fontSize: '0.9rem', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <input type="checkbox" className="custom-checkbox" style={{ width: '18px', height: '18px' }} checked={navNeeds === 'step_free'} onChange={e => setNavNeeds(e.target.checked ? 'step_free' : 'standard')} />
+                <input type="checkbox" className="custom-checkbox" style={{ width: '18px', height: '18px' }} checked={navNeeds === 'step_free'} onChange={e => setNavNeeds(e.target.checked ? 'step_free' : 'standard')} aria-label="Strictly step-free route" />
                 Strictly step-free route
               </label>
             </div>
@@ -152,6 +153,7 @@ export default function FanWayfinding({ globalLanguage }) {
               style={{ width: '100%', padding: '0', height: '42px', fontSize: '0.95rem', borderRadius: '8px' }}
               onClick={handleQuery}
               disabled={navLoading}
+              aria-label="Execute Pathfinding Math"
             >
               {navLoading ? <Loader2 className="spin-anim" size={20} /> : "Execute Pathfinding Math"}
             </button>
@@ -170,7 +172,7 @@ export default function FanWayfinding({ globalLanguage }) {
             />
           </div>
 
-          <div style={{ marginTop: '1.5rem', marginBottom: '1.5rem', padding: '1.5rem', background: 'rgba(6, 182, 212, 0.05)', borderRadius: '8px', borderLeft: '4px solid var(--accent-cyan)' }}>
+          <div style={{ marginTop: '1.5rem', marginBottom: '1.5rem', padding: '1.5rem', background: 'rgba(6, 182, 212, 0.05)', borderRadius: '8px', borderLeft: '4px solid var(--accent-cyan)' }} aria-live="polite">
             {navLoading ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', color: 'var(--accent-cyan)' }}>
                 <Loader2 className="spin-anim" size={24} />

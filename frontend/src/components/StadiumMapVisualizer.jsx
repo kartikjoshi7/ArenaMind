@@ -162,7 +162,7 @@ export default function StadiumMapVisualizer({ rawPath = [], explorationSteps = 
       </div>
 
         <div style={{ flex: 1, minHeight: 0, position: 'relative' }}>
-          <svg width="100%" height="100%" viewBox="0 -80 1000 1000" style={{ display: 'block', position: 'relative', zIndex: 1 }}>
+          <svg width="100%" height="100%" viewBox="0 -80 1000 1000" style={{ display: 'block', position: 'relative', zIndex: 1 }} role="img" aria-label="Interactive Stadium Topology Map">
         
         {/* Render all structural edges first (faint background lines) */}
         {graphData.edges.map((edge, idx) => {

@@ -57,12 +57,12 @@ export default function FanTransit({ globalLanguage }) {
         <div className="bento-panel padded-panel">
           <div style={{ marginBottom: '2rem' }}>
             <label className="input-label" style={{ fontSize: '0.75rem', fontWeight: '600' }}>Estimated Commute Distance (KM)</label>
-            <input type="number" className="radio-input" style={{ width: '100%', height: '42px', fontSize: '0.9rem', padding: '0 1rem' }} value={ecoOrigin} onChange={e => setEcoOrigin(e.target.value)} />
+            <input type="number" className="radio-input" style={{ width: '100%', height: '42px', fontSize: '0.9rem', padding: '0 1rem' }} value={ecoOrigin} onChange={e => setEcoOrigin(e.target.value)} aria-label="Estimated Commute Distance in Kilometers" />
           </div>
 
           <div style={{ marginBottom: '2.5rem' }}>
             <label className="input-label" style={{ fontSize: '0.75rem', fontWeight: '600' }}>Planned Transit Mode</label>
-            <select className="radio-input" style={{ width: '100%', height: '42px', fontSize: '0.9rem', padding: '0 1rem' }} value={ecoNeeds} onChange={e => setEcoNeeds(e.target.value)}>
+            <select className="radio-input" style={{ width: '100%', height: '42px', fontSize: '0.9rem', padding: '0 1rem' }} value={ecoNeeds} onChange={e => setEcoNeeds(e.target.value)} aria-label="Planned Transit Mode">
               <option>Walking / Bicycle</option>
               <option>Metro / Bus (Public Transit)</option>
               <option>Rideshare / Taxi</option>
@@ -75,13 +75,14 @@ export default function FanTransit({ globalLanguage }) {
             style={{ width: '100%', padding: '1rem', fontSize: '0.95rem', borderRadius: '8px' }}
             onClick={handleQuery}
             disabled={ecoLoading}
+            aria-label="Execute Impact Analysis"
           >
             {ecoLoading ? <Loader2 className="spin-anim" size={20} /> : "Execute Impact Analysis"}
           </button>
         </div>
 
         {/* Right Side: Output */}
-        <div className="bento-panel padded-panel">
+        <div className="bento-panel padded-panel" aria-live="polite">
           <h3 style={{ fontSize: '1.1rem', fontFamily: '"Outfit", sans-serif', marginBottom: '1.5rem', color: 'var(--accent-green)' }}>Environmental Analysis</h3>
           {ecoLoading ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60%', color: 'var(--text-muted)' }}>

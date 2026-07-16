@@ -25,12 +25,19 @@ async def process_fan_request(interaction: FanInteraction) -> ActionableTask:
         ActionableTask: A strictly typed, categorized operational task for stadium staff.
     """
     
+import re
+
+    # Security: Input Sanitization to prevent Prompt Injection & Token Exhaustion
+    # Strip dangerous characters and enforce a hard limit of 250 chars
+    sanitized_transcript = re.sub(r'[<>{}\[\]]', '', interaction.raw_audio_transcript)
+    sanitized_transcript = sanitized_transcript[:250].strip()
+
     # Prompt engineering designed specifically to force JSON output and act as a stadium triage system
     prompt = f"""
 You are an expert stadium triage dispatcher for the FIFA 2026 World Cup.
 Your job is to analyze the following fan interaction, translate it to English, and assign an operational task.
 
-Fan Request (Raw Transcript): "{interaction.raw_audio_transcript}"
+Fan Request (Raw Transcript): "{sanitized_transcript}"
 Location: {interaction.location_zone}
 Detected Language: {interaction.detected_language or 'Unknown'}
 

@@ -77,7 +77,7 @@ app.include_router(volunteer_router)
 app.include_router(fan_router)
 
 
-@app.get("/health", response_model=Dict[str, Any], tags=["System Operations"])
+@app.api_route("/health", methods=["GET", "HEAD"], response_model=Dict[str, Any], tags=["System Operations"])
 async def health_check() -> Dict[str, Any]:
     """
     Primary system telemetry endpoint utilized by deployment load balancers 

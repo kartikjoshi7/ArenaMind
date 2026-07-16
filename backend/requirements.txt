@@ -5,3 +5,5 @@ pydantic-settings
 ibm-watsonx-ai
 python-dotenv
 slowapi
+pytest
+pytest-asyncio
