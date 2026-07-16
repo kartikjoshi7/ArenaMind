@@ -1,5 +1,7 @@
 # ArenaMind: Intelligent Fan Experience Platform
 
+**Live Frontend (Vercel):** https://arena-mind-c4.vercel.app  
+**Live Backend API (Render):** https://arenamind-xe6v.onrender.com  
 ArenaMind is a next-generation smart stadium platform designed to optimize crowd flow, enhance fan accessibility, and promote sustainable transit for large-scale events. Built for the Prompt Wars Hackathon, this application demonstrates a highly responsive, mathematically-driven venue topology system with a strict AI separation of concerns.
 
 ## Table of Contents

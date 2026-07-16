@@ -44,7 +44,7 @@ async def generate_multilingual_signage(alert: CongestionAlert, target_language:
         }
 
         model = ModelInference(
-            model_id="ibm/granite-13b-chat-v2",
+            model_id="meta-llama/llama-3-3-70b-instruct",
             credentials=credentials,
             project_id=project_id,
             params={
