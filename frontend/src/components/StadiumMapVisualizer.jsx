@@ -12,7 +12,8 @@ export default function StadiumMapVisualizer({ rawPath = [], explorationSteps = 
 
   useEffect(() => {
     // Single Source of Truth: Fetching live topology from backend
-    fetch('http://127.0.0.1:8000/api/v1/fan/venue-graph')
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api/v1';
+    fetch(`${API_BASE_URL}/fan/venue-graph`)
       .then(res => res.json())
       .then(data => {
         setGraphData(data);
