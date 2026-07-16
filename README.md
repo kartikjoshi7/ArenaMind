@@ -13,7 +13,7 @@
 ⚙️ **Live Backend API (Render):** [https://arenamind-xe6v.onrender.com](https://arenamind-xe6v.onrender.com)  
 📖 **API Documentation:** [https://arenamind-xe6v.onrender.com/docs](https://arenamind-xe6v.onrender.com/docs)
 
-ArenaMind is a next-generation smart stadium platform designed to optimize crowd flow, enhance fan accessibility, and promote sustainable transit for the FIFA World Cup 2026. Built for the Prompt Wars Hackathon, this application demonstrates a highly responsive, mathematically-driven venue topology system with a strict AI separation of concerns — powered by **IBM Watsonx.ai (Meta Llama 3)**.
+ArenaMind is a next-generation smart stadium platform designed to optimize crowd flow, enhance fan accessibility, and promote sustainable transit for the FIFA World Cup 2026. Built for the Prompt Wars Hackathon, this application demonstrates a highly responsive, mathematically-driven venue topology system with a strict AI separation of concerns — powered by **IBM Watsonx.ai (Granite 4 Small)**.
 
 ## Table of Contents
 1. [Problem](#problem)
@@ -66,17 +66,17 @@ Modern stadiums struggle with managing peak crowd densities and ensuring accessi
         v
 [ Prompt Builder ]
         |
-        | (5) Injects immutable math path into strict prompt template
+        | (5) Injects immutable math path into strict System/User/Assistant prompt template
         v
-[ IBM Watsonx.ai — Meta Llama 3 (70B) ] (Isolated phrasing layer)
+[ IBM Watsonx.ai — Granite 4 Small ] (Isolated phrasing layer)
 ```
 
 ## Request Flow
 1. **Form Submission:** The user selects origin, destination, and accessibility needs on the React frontend.
 2. **Rate Limiting & CORS:** FastAPI intercepts the request, ensuring the origin is whitelisted and the IP hasn't exceeded the rate limit.
 3. **Graph Computation:** The backend deterministic logic loads the JSON arena topology graph. If `step_free` is requested, stair edges are pruned. Dijkstra's algorithm computes the optimal physical path.
-4. **Prompt Construction:** The computed array (e.g. `["Gate North", "Concourse 100", "Section 101"]`) is injected into a strict, zero-shot system prompt.
-5. **AI Translation:** IBM Watsonx (Meta Llama 3 70B) converts the hard data into a friendly, localized paragraph with Markdown formatting.
+4. **Prompt Construction:** The computed array (e.g. `["Gate North", "Concourse 100", "Section 101"]`) is injected into a strict zero-shot system prompt tailored for Granite.
+5. **AI Translation:** IBM Watsonx (Granite 4 Small) rapidly converts the hard data into a friendly, localized paragraph using `System / User / Assistant` fencing to prevent instruction leaking.
 6. **Response & Error Handling:** If Watsonx succeeds, the structured JSON is returned. If it fails, a controlled deterministic fallback is returned. The frontend visualizes the path on an interactive SVG stadium map.
 
 ## Tech Stack
@@ -85,7 +85,7 @@ Modern stadiums struggle with managing peak crowd densities and ensuring accessi
 |---|---|
 | **Frontend** | React 19 + Vite, Vanilla CSS, Lucide Icons |
 | **Backend** | Python, FastAPI, Uvicorn, Pydantic |
-| **AI Engine** | IBM Watsonx.ai (Meta Llama 3 70B Instruct) |
+| **AI Engine** | IBM Watsonx.ai (ibm/granite-4-h-small) |
 | **Graph Algorithm** | Custom Dijkstra's with accessibility-aware edge pruning |
 | **Frontend Hosting** | Vercel (Edge CDN) |
 | **Backend Hosting** | Render (Docker) |
