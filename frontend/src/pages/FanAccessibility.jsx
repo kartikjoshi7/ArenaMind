@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { HeartHandshake, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { processFanQuery } from '../infrastructure/arena_telemetry_gateway';
 import '../ArenaControlDesk.css';
 
@@ -37,7 +37,7 @@ export default function FanAccessibility({ globalLanguage }) {
         language: globalLanguage
       });
       setAccResult(res.structured_content);
-    } catch (err) {
+    } catch {
       setAccResult("AI Core offline or unreachable. Please try again.");
     } finally {
       setAccLoading(false);

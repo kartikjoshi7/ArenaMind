@@ -45,6 +45,10 @@ logs/
 # Frontend Boilerplate
 frontend/.gitignore
 frontend/.oxlintrc.json
-frontend/README.md
+frontend/.readme.md
 frontend/test-results/
 frontend/playwright.config.js
+.coverage
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/

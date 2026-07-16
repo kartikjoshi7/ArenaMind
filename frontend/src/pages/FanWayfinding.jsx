@@ -32,7 +32,7 @@ export default function FanWayfinding({ globalLanguage }) {
       if (res.raw_path) setRawPath(res.raw_path);
       if (res.exploration_steps) setExplorationSteps(res.exploration_steps);
       if (res.pruned_edges) setPrunedEdges(res.pruned_edges);
-    } catch (err) {
+    } catch {
       setNavResult("AI Core offline or unreachable. Please try again.");
     } finally {
       setNavLoading(false);

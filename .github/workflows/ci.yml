@@ -34,7 +34,7 @@ jobs:
         
     - name: Static type checking with Mypy
       run: |
-        mypy backend/app/ --ignore-missing-imports
+        mypy backend/ --ignore-missing-imports
         
     - name: Run tests with pytest
       run: |

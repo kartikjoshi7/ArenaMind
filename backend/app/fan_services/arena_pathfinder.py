@@ -49,7 +49,7 @@ class ArenaPathfinder:
         visited = set()
         
         exploration_history: List[str] = []
-        pruned_edges: List[str] = []
+        pruned_edges: List[Dict[str, str]] = []
         # Keep track of pruned to avoid duplicates (undirected edges mean A->B and B->A might both be pruned)
         seen_pruned = set()
 

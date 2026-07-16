@@ -42,7 +42,7 @@ async def process_fan_query(query: FanQuery):
     # 1. Deterministic Execution Phase
     if query.module_type == "G1_PATHFINDING":
         requires_step_free = (query.needs == "step_free")
-        path, distance, exploration_steps, pruned_edges = pathfinder_engine.calculate_shortest_path(query.origin, query.destination, requires_step_free)
+        path, distance, exploration_steps, pruned_edges = pathfinder_engine.calculate_shortest_path(query.origin, query.destination, requires_step_free) # type: ignore
         
         if not path:
             fallback_message = f"Error: No valid path found from {query.origin} to {query.destination}. Please contact a steward."

@@ -10,7 +10,7 @@ from backend.app.volunteer_ops.volunteer_models import ActionableTask, FanIntera
 logger = logging.getLogger(__name__)
 
 # In-memory LRU approximation for the translation desk
-_TRANSLATION_CACHE: dict[str, str] = {}
+_TRANSLATION_CACHE: dict[str, ActionableTask] = {}
 
 async def process_fan_request(interaction: FanInteraction) -> ActionableTask:
     """

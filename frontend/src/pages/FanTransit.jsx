@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Leaf, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { processFanQuery } from '../infrastructure/arena_telemetry_gateway';
 import '../ArenaControlDesk.css';
 
@@ -37,7 +37,7 @@ export default function FanTransit({ globalLanguage }) {
         language: globalLanguage
       });
       setEcoResult(res.structured_content);
-    } catch (err) {
+    } catch {
       setEcoResult("AI Core offline or unreachable. Please try again.");
     } finally {
       setEcoLoading(false);
