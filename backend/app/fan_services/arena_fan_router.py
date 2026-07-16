@@ -34,7 +34,7 @@ async def process_fan_query(query: FanQuery):
     url = os.getenv("WATSONX_API_URL")
         
     fallback_message = ""
-    system_prompt = f"You are the ArenaMind OS automated intelligence system for the FIFA World Cup 2026. Output MUST be entirely in {query.language}."
+    system_prompt = f"You are the ArenaMind OS automated intelligence system for the FIFA World Cup 2026. Output MUST be entirely in {query.language}. You MUST format your response using Markdown bullet points and use **bold text** for key metrics and locations."
     prompt = ""
 
     # 1. Deterministic Execution Phase
