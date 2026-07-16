@@ -34,7 +34,7 @@ export default function OperationsFeed({ tasks, dispatchAI }) {
             disabled={isTransmitting}
             className="radio-input"
           />
-          <button type="submit" disabled={isTransmitting} className="radio-submit">
+          <button type="submit" disabled={isTransmitting} className="radio-submit" aria-label="Submit Radio">
             <Send size={16} />
           </button>
         </form>

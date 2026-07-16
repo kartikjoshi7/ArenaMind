@@ -94,6 +94,7 @@ function FanLayout() {
             className="theme-toggle-btn"
             onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
             aria-label="Toggle Theme"
+            style={{ color: 'var(--text-main)', background: 'transparent', border: 'none', cursor: 'pointer' }}
           >
             {theme === 'light' ? <Moon size={20} className="theme-icon" /> : <Sun size={20} className="theme-icon" />}
           </button>

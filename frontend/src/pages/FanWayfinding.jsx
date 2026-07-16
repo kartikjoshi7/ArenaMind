@@ -162,7 +162,7 @@ export default function FanWayfinding({ globalLanguage }) {
 
         {/* Bottom Section: Output Map */}
         <div className="bento-panel padded-panel" style={{ display: 'flex', flexDirection: 'column' }}>
-          <h2 style={{ fontSize: '1.1rem', fontFamily: '"Outfit", sans-serif', marginBottom: '1.5rem', color: 'var(--accent-cyan)' }}>Live Topology Map</h2>
+          <h2 style={{ fontSize: '1.1rem', fontFamily: 'Outfit, sans-serif', marginBottom: '1.5rem', color: '#0369a1' }}>Live Topology Map</h2>
           
           <div className="topology-map-container">
             <StadiumMapVisualizer 

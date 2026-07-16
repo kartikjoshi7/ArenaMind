@@ -34,8 +34,10 @@ async def process_fan_query(query: FanQuery):
     url = os.getenv("WATSONX_API_URL")
         
     fallback_message = ""
-    system_prompt = f"You are the ArenaMind OS automated intelligence system for the FIFA World Cup 2026. Output MUST be entirely in {query.language}. You MUST format your response using Markdown bullet points and use **bold text** for key metrics and locations."
+    system_prompt = f"You are an expert stadium navigation guide for the FIFA World Cup 2026. Output MUST be entirely in {query.language}. Use **bold text** for key locations and metrics."
     prompt = ""
+    max_tokens = 100
+    module_constraints = ""
 
     # 1. Deterministic Execution Phase
     if query.module_type == "G1_PATHFINDING":
@@ -46,16 +48,22 @@ async def process_fan_query(query: FanQuery):
             fallback_message = f"Error: No valid path found from {query.origin} to {query.destination}. Please contact a steward."
         else:
             path_str = " -> ".join(path)
-            fallback_message = f"ROUTE CONFIRMED [{distance} meters]: {path_str}"
-            prompt = f"{system_prompt}\nThe mathematical routing engine has verified the following route: {path_str} (Total Distance: {distance}m). Please translate this exact route into a friendly, clear sentence without hallucinating any other locations."
+            fallback_message = f"To get from **{query.origin}** to **{query.destination}**, walk along **{path_str}** (Total Distance: **{distance}m**)."
+            prompt = f"{system_prompt}\nThe verified path is: {path_str} (Distance: {distance}m). Write a single concise, friendly sentence describing how to walk this route from {query.origin} to {query.destination}."
+            module_constraints = "STRICT RULES: Output ONLY 1 concise sentence. Do NOT use bullet points, list prefixes, hashtags, or repeated sentences. No CoT analysis."
+            max_tokens = 80
 
     elif query.module_type == "G2_ACCESS":
         fallback_message = f"ACCOMMODATION LOGGED: Staff will meet you at {query.destination} to assist with {query.needs} requirements."
         prompt = f"{system_prompt}\nThe fan is heading to {query.destination} and requires {query.needs} accommodations. Draft a brief, supportive 3-point accommodation plan detailing how venue staff will assist them."
+        module_constraints = "STRICT RULES: Output EXACTLY 3 short bullet points. Do NOT include introductory or concluding paragraphs. No hashtags or CoT analysis."
+        max_tokens = 200
 
     elif query.module_type == "G3_TRANSIT":
         fallback_message = f"TRANSIT LOGGED: You are traveling {query.origin}km via {query.needs}. Please consider low-carbon alternatives if possible."
         prompt = f"{system_prompt}\nThe fan is travelling {query.origin} km to the stadium and prefers {query.needs}. Analyze this transit mode for environmental impact and suggest the most eco-friendly alternative if applicable, keeping the tone encouraging."
+        module_constraints = "STRICT RULES: Keep it under 3 short sentences. Do NOT hallucinate specific city names (like New York or Los Angeles). Do NOT include hashtags or CoT analysis."
+        max_tokens = 200
     else:
         raise HTTPException(status_code=400, detail="Invalid module_type")
 
@@ -69,8 +77,7 @@ async def process_fan_query(query: FanQuery):
             "apikey": api_key
         }
         
-        # Enforce strict output constraints in prompt to prevent CoT & LaTeX output
-        prompt_with_constraints = f"{prompt}\nSTRICT RULES: Output ONLY the final 1-2 sentence route description. Do NOT include step-by-step analysis, chain of thought, LaTeX markup, math boxes, or markdown headers."
+        prompt_with_constraints = f"{prompt}\n{module_constraints}"
 
         model = ModelInference(
             model_id="meta-llama/llama-3-3-70b-instruct",
@@ -78,13 +85,13 @@ async def process_fan_query(query: FanQuery):
             project_id=project_id,
             params={
                 "decoding_method": "greedy",
-                "max_new_tokens": 128,
-                "repetition_penalty": 1.1
+                "max_new_tokens": max_tokens,
+                "repetition_penalty": 1.2
             }
         )
-        response_text = model.generate_text(prompt_with_constraints)
+        response_text = str(model.generate_text(prompt_with_constraints))
 
-        # Post-process response to strip any lingering CoT or LaTeX artifacts
+        # Post-process response to strip CoT artifacts and hashtags
         import re
         clean_text = response_text
         if "# Step-by-step" in clean_text:
@@ -93,9 +100,21 @@ async def process_fan_query(query: FanQuery):
             clean_text = clean_text.split("# Step-by-Step")[0]
         if "# Final Answer" in clean_text:
             clean_text = clean_text.split("# Final Answer")[-1]
+        
+        # Strip hashtags (e.g. #ArenaMindOS #FIFAWorldCup2026)
+        clean_text = re.sub(r'#[A-Za-z0-9_]+', '', clean_text)
+        
+        # Strip LaTeX math boxes and symbols
         clean_text = re.sub(r'\\?boxed\{([^}]+)\}', r'\1', clean_text)
         clean_text = re.sub(r'\$[\$]?', '', clean_text)
         clean_text = clean_text.strip()
+
+        # For G1 specifically, strip any leading bullet points just in case
+        if query.module_type == "G1_PATHFINDING":
+            clean_text = re.sub(r'^[\*\-\s\•]+', '', clean_text).strip()
+            sentences = [s.strip() for s in clean_text.split('.') if s.strip()]
+            if len(sentences) >= 2 and sentences[0] in sentences[1]:
+                clean_text = sentences[0] + '.'
         
         # Inject raw path if this is a pathfinding query
         extracted_path = path if query.module_type == "G1_PATHFINDING" and path else []

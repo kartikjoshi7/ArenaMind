@@ -44,3 +44,15 @@ def test_empty_graph():
     path, distance, exploration, pruned = pf.calculate_shortest_path("Gate North", "Section 101")
     assert path == []
     assert distance == 0
+
+def test_visited_node_loop(pathfinder):
+    # Artificially add a loop where a node might be re-evaluated to hit line 63
+    pathfinder.adj_list["Gate North"].append(("Gate North", 5, True))
+    path, dist, expl, pruned = pathfinder.calculate_shortest_path("Gate North", "Section 101")
+    assert "Gate North" in path
+
+def test_graph_file_not_found():
+    import unittest.mock as mock
+    with mock.patch('builtins.open', side_effect=FileNotFoundError):
+        pf = ArenaPathfinder()
+        assert pf.nodes == {}

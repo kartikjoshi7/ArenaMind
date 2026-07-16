@@ -6,6 +6,8 @@ from backend.app.crowd_control.sector_models import CongestionAlert
 
 logger = logging.getLogger(__name__)
 
+# In-memory cache to prevent 429 Too Many Requests from repeated telemetry polling
+_SIGNAGE_CACHE: dict[str, str] = {}
 
 async def generate_multilingual_signage(alert: CongestionAlert, target_language: str) -> str:
     """
@@ -21,6 +23,10 @@ async def generate_multilingual_signage(alert: CongestionAlert, target_language:
         str: A translated, maximum 150-character string for display on digital stadium boards.
     """
     diversion_gates_str = ", ".join(alert.recommended_diversion_routes)
+    cache_key = f"{alert.sector_id}_{diversion_gates_str}_{target_language}"
+    
+    if cache_key in _SIGNAGE_CACHE:
+        return _SIGNAGE_CACHE[cache_key]
     
     prompt = (
         f"You are a stadium digital signage system. You must generate a polite, "
@@ -54,10 +60,12 @@ async def generate_multilingual_signage(alert: CongestionAlert, target_language:
             }
         )
         
-        response_text = model.generate_text(prompt)
+        response_text = str(model.generate_text(prompt))
         
         if response_text:
-            return response_text.strip()
+            cleaned_text = response_text.strip()
+            _SIGNAGE_CACHE[cache_key] = cleaned_text
+            return cleaned_text
         else:
             raise ValueError("Received an empty response payload from the Watsonx model.")
             

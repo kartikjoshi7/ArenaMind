@@ -30,6 +30,7 @@ export default function SectorManifestTable({ sectors, updateSectorCapacity, eva
                   <td className="metric-col">{sector.max_capacity.toLocaleString()}</td>
                   <td className="slider-col">
                     <input 
+                      aria-label="Sector Capacity"
                       type="range" 
                       min="0" 
                       max={sector.max_capacity} 

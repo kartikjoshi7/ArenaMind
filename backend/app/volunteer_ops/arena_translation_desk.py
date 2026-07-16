@@ -3,12 +3,14 @@ import os
 import re
 
 from ibm_watsonx_ai.foundation_models import ModelInference
-from pydantic import ValidationError
+
 
 from backend.app.volunteer_ops.volunteer_models import ActionableTask, FanInteraction
 
 logger = logging.getLogger(__name__)
 
+# In-memory LRU approximation for the translation desk
+_TRANSLATION_CACHE: dict[str, str] = {}
 
 async def process_fan_request(interaction: FanInteraction) -> ActionableTask:
     """
@@ -30,6 +32,10 @@ async def process_fan_request(interaction: FanInteraction) -> ActionableTask:
     # Strip dangerous characters and enforce a hard limit of 250 chars
     sanitized_transcript = re.sub(r'[<>{}\[\]]', '', interaction.raw_audio_transcript)
     sanitized_transcript = sanitized_transcript[:250].strip()
+
+    # Check cache first to avoid IBM Watsonx 429 Too Many Requests
+    if sanitized_transcript in _TRANSLATION_CACHE:
+        return _TRANSLATION_CACHE[sanitized_transcript]
 
     # Prompt engineering designed specifically to force JSON output and act as a stadium triage system
     prompt = f"""
@@ -64,24 +70,23 @@ You must return your response STRICTLY as a raw JSON object matching the followi
         model = ModelInference(
             model_id="meta-llama/llama-3-3-70b-instruct",
             credentials=credentials,
-            project_id=project_id,
-            params={
-                "decoding_method": "greedy",
-                "max_new_tokens": 512,
-                "repetition_penalty": 1.1
-            }
+            project_id=project_id
         )
         
-        response_text = model.generate_text(prompt)
+        response_text = str(model.generate_text(prompt=prompt))
         
         if not response_text:
             raise ValueError("Empty response received from Watsonx.")
             
-        # Clean potential markdown wrapping
-        cleaned_json = response_text.replace('```json', '').replace('```', '').strip()
+        # Super simple extraction from Llama 3 output format
+        json_str = response_text.replace("```json", "").replace("```", "").strip()
             
         # Safely validate and parse the LLM's JSON string directly into our strict Pydantic model
-        task = ActionableTask.model_validate_json(cleaned_json)
+        task = ActionableTask.model_validate_json(json_str)
+        
+        # Save to cache
+        _TRANSLATION_CACHE[sanitized_transcript] = task
+        
         return task
         
     except Exception as e:

@@ -1,7 +1,7 @@
 import json
 import heapq
 import os
-from typing import List, Tuple, Dict, Any
+from typing import List, Tuple, Dict
 
 GRAPH_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'arena_venue_graph.json')
 
@@ -48,8 +48,8 @@ class ArenaPathfinder:
         pq = [(0, origin, [origin])]
         visited = set()
         
-        exploration_history = []
-        pruned_edges = []
+        exploration_history: List[str] = []
+        pruned_edges: List[str] = []
         # Keep track of pruned to avoid duplicates (undirected edges mean A->B and B->A might both be pruned)
         seen_pruned = set()
 

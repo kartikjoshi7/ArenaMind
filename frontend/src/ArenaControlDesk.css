@@ -213,7 +213,7 @@ body {
 .live-indicator {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.75rem;
-  color: var(--accent-green);
+  color: #064e3b;
   text-transform: uppercase;
   letter-spacing: 1px;
   background: rgba(16, 185, 129, 0.1);
