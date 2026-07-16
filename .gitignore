@@ -41,3 +41,10 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# Frontend Boilerplate
+frontend/.gitignore
+frontend/.oxlintrc.json
+frontend/README.md
+frontend/test-results/
+frontend/playwright.config.js
