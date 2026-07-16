@@ -47,7 +47,7 @@ export default function StadiumMapVisualizer({ rawPath = [], explorationSteps = 
           clearInterval(timerRef.current);
           setAnimationPhase(2); // Lock on!
         }
-      }, 100); // 100ms per node evaluation
+      }, 35); // 35ms per node evaluation for fast, smooth scanning animation
     } else if (rawPath && rawPath.length > 0) {
       // Fallback if no exploration data but we have a path
       setAnimationPhase(2);

@@ -69,17 +69,33 @@ async def process_fan_query(query: FanQuery):
             "apikey": api_key
         }
         
+        # Enforce strict output constraints in prompt to prevent CoT & LaTeX output
+        prompt_with_constraints = f"{prompt}\nSTRICT RULES: Output ONLY the final 1-2 sentence route description. Do NOT include step-by-step analysis, chain of thought, LaTeX markup, math boxes, or markdown headers."
+
         model = ModelInference(
             model_id="meta-llama/llama-3-3-70b-instruct",
             credentials=credentials,
             project_id=project_id,
             params={
                 "decoding_method": "greedy",
-                "max_new_tokens": 512,
+                "max_new_tokens": 128,
                 "repetition_penalty": 1.1
             }
         )
-        response_text = model.generate_text(prompt)
+        response_text = model.generate_text(prompt_with_constraints)
+
+        # Post-process response to strip any lingering CoT or LaTeX artifacts
+        import re
+        clean_text = response_text
+        if "# Step-by-step" in clean_text:
+            clean_text = clean_text.split("# Step-by-step")[0]
+        if "# Step-by-Step" in clean_text:
+            clean_text = clean_text.split("# Step-by-Step")[0]
+        if "# Final Answer" in clean_text:
+            clean_text = clean_text.split("# Final Answer")[-1]
+        clean_text = re.sub(r'\\?boxed\{([^}]+)\}', r'\1', clean_text)
+        clean_text = re.sub(r'\$[\$]?', '', clean_text)
+        clean_text = clean_text.strip()
         
         # Inject raw path if this is a pathfinding query
         extracted_path = path if query.module_type == "G1_PATHFINDING" and path else []
@@ -87,7 +103,7 @@ async def process_fan_query(query: FanQuery):
         extracted_pruned = pruned_edges if query.module_type == "G1_PATHFINDING" else []
         
         return FanResponse(
-            structured_content=response_text, 
+            structured_content=clean_text or fallback_message, 
             raw_path=extracted_path,
             exploration_steps=extracted_exploration,
             pruned_edges=extracted_pruned
