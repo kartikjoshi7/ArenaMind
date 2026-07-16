@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from typing import Optional
-import google.generativeai as genai
+from ibm_watsonx_ai.foundation_models import ModelInference
 import os
 from .arena_pathfinder import ArenaPathfinder
 
@@ -29,9 +29,9 @@ async def process_fan_query(query: FanQuery):
     Unified endpoint for Fan Portal interactions.
     Applies deterministic math first (Dijkstra), then translates via GenAI.
     """
-    api_key = os.getenv("GEMINI_API_KEY")
-    if api_key:
-        genai.configure(api_key=api_key)
+    api_key = os.getenv("WATSONX_API_KEY")
+    project_id = os.getenv("WATSONX_API_PROJECT_ID")
+    url = os.getenv("WATSONX_API_URL")
         
     fallback_message = ""
     system_prompt = f"You are the ArenaMind OS automated intelligence system for the FIFA World Cup 2026. Output MUST be entirely in {query.language}."
@@ -61,11 +61,25 @@ async def process_fan_query(query: FanQuery):
 
     # 2. GenAI Phrasing Layer (Fail-Closed Fallback)
     try:
-        if not api_key:
-            raise ValueError("GEMINI_API_KEY is not configured.")
+        if not api_key or not project_id or not url:
+            raise ValueError("IBM Cloud credentials are not fully configured.")
             
-        model = genai.GenerativeModel('gemini-2.5-flash')
-        response = model.generate_content(prompt)
+        credentials = {
+            "url": url,
+            "apikey": api_key
+        }
+        
+        model = ModelInference(
+            model_id="ibm/granite-13b-chat-v2",
+            credentials=credentials,
+            project_id=project_id,
+            params={
+                "decoding_method": "greedy",
+                "max_new_tokens": 512,
+                "repetition_penalty": 1.1
+            }
+        )
+        response_text = model.generate_text(prompt)
         
         # Inject raw path if this is a pathfinding query
         extracted_path = path if query.module_type == "G1_PATHFINDING" and path else []
@@ -73,7 +87,7 @@ async def process_fan_query(query: FanQuery):
         extracted_pruned = pruned_edges if query.module_type == "G1_PATHFINDING" else []
         
         return FanResponse(
-            structured_content=response.text, 
+            structured_content=response_text, 
             raw_path=extracted_path,
             exploration_steps=extracted_exploration,
             pruned_edges=extracted_pruned

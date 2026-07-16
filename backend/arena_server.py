@@ -16,7 +16,9 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     cors_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:80", "http://localhost"]
     rate_limit: str = "20/minute"
-    gemini_api_key: str = ""
+    watsonx_api_key: str = ""
+    watsonx_api_project_id: str = ""
+    watsonx_api_url: str = ""
     
     class Config:
         env_file = ".env"

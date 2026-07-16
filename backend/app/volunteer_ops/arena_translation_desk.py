@@ -1,15 +1,13 @@
 import logging
 import os
 
-import google.generativeai as genai
+from ibm_watsonx_ai.foundation_models import ModelInference
 from pydantic import ValidationError
 
 from backend.app.volunteer_ops.volunteer_models import ActionableTask, FanInteraction
 
 logger = logging.getLogger(__name__)
 
-# Configure the Gemini API client
-genai.configure(api_key=os.environ.get("GEMINI_API_KEY", ""))
 
 async def process_fan_request(interaction: FanInteraction) -> ActionableTask:
     """
@@ -45,19 +43,39 @@ You must return your response STRICTLY as a raw JSON object matching the followi
 """
 
     try:
-        # Utilize gemini-2.5-flash with forced JSON response mime-type for absolute data integrity
-        model = genai.GenerativeModel(
-            model_name="gemini-2.5-flash",
-            generation_config={"response_mime_type": "application/json"}
+        api_key = os.environ.get("WATSONX_API_KEY")
+        project_id = os.environ.get("WATSONX_API_PROJECT_ID")
+        url = os.environ.get("WATSONX_API_URL")
+
+        if not api_key or not project_id or not url:
+            raise ValueError("IBM Cloud credentials are not fully configured.")
+
+        credentials = {
+            "url": url,
+            "apikey": api_key
+        }
+
+        model = ModelInference(
+            model_id="ibm/granite-13b-chat-v2",
+            credentials=credentials,
+            project_id=project_id,
+            params={
+                "decoding_method": "greedy",
+                "max_new_tokens": 512,
+                "repetition_penalty": 1.1
+            }
         )
         
-        response = await model.generate_content_async(prompt)
+        response_text = model.generate_text(prompt)
         
-        if not response.text:
-            raise ValueError("Empty response received from Gemini.")
+        if not response_text:
+            raise ValueError("Empty response received from Watsonx.")
+            
+        # Clean potential markdown wrapping
+        cleaned_json = response_text.replace('```json', '').replace('```', '').strip()
             
         # Safely validate and parse the LLM's JSON string directly into our strict Pydantic model
-        task = ActionableTask.model_validate_json(response.text)
+        task = ActionableTask.model_validate_json(cleaned_json)
         return task
         
     except Exception as e:

@@ -2,6 +2,6 @@ fastapi
 uvicorn[standard]
 pydantic
 pydantic-settings
-google-generativeai
+ibm-watsonx-ai
 python-dotenv
 slowapi

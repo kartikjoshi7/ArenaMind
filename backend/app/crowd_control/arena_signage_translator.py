@@ -1,13 +1,11 @@
 import logging
 import os
 
-import google.generativeai as genai
+from ibm_watsonx_ai.foundation_models import ModelInference
 from backend.app.crowd_control.sector_models import CongestionAlert
 
 logger = logging.getLogger(__name__)
 
-# Configure the Gemini API client. It expects the GEMINI_API_KEY environment variable.
-genai.configure(api_key=os.environ.get("GEMINI_API_KEY", ""))
 
 async def generate_multilingual_signage(alert: CongestionAlert, target_language: str) -> str:
     """
@@ -33,16 +31,35 @@ async def generate_multilingual_signage(alert: CongestionAlert, target_language:
     )
     
     try:
-        # Initialize the model (using gemini-2.5-flash for fast, short-form text generation)
-        model = genai.GenerativeModel("gemini-2.5-flash")
+        api_key = os.environ.get("WATSONX_API_KEY")
+        project_id = os.environ.get("WATSONX_API_PROJECT_ID")
+        url = os.environ.get("WATSONX_API_URL")
+
+        if not api_key or not project_id or not url:
+            raise ValueError("IBM Cloud credentials are not fully configured.")
+
+        credentials = {
+            "url": url,
+            "apikey": api_key
+        }
+
+        model = ModelInference(
+            model_id="ibm/granite-13b-chat-v2",
+            credentials=credentials,
+            project_id=project_id,
+            params={
+                "decoding_method": "greedy",
+                "max_new_tokens": 150,
+                "repetition_penalty": 1.1
+            }
+        )
         
-        # Execute the asynchronous API call
-        response = await model.generate_content_async(prompt)
+        response_text = model.generate_text(prompt)
         
-        if response.text:
-            return response.text.strip()
+        if response_text:
+            return response_text.strip()
         else:
-            raise ValueError("Received an empty response payload from the Gemini model.")
+            raise ValueError("Received an empty response payload from the Watsonx model.")
             
     except Exception as e:
         # Log the failure for Operations Engineering review
