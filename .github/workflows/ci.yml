@@ -37,6 +37,10 @@ jobs:
         mypy backend/ --ignore-missing-imports
         
     - name: Run tests with pytest
+      env:
+        WATSONX_API_KEY: "dummy"
+        WATSONX_API_PROJECT_ID: "dummy"
+        WATSONX_API_URL: "https://us-south.ml.cloud.ibm.com"
       run: |
         pytest --cov=backend/app backend/tests/
 
