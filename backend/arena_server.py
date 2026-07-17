@@ -71,6 +71,17 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all standard and custom headers
 )
 
+# Security Headers Middleware — production-grade hardening
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    """Injects security headers into every response to prevent XSS, clickjacking, and MIME sniffing."""
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    return response
+
 # Mount our modular, decoupled Domain routers
 app.include_router(crowd_router)
 app.include_router(volunteer_router)

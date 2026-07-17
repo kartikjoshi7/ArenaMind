@@ -56,3 +56,23 @@ def test_graph_file_not_found():
     with mock.patch('builtins.open', side_effect=FileNotFoundError):
         pf = ArenaPathfinder()
         assert pf.nodes == {}
+
+def test_dijkstra_visited_node_skip():
+    """
+    Diamond graph: A->B(1), A->C(2), B->C(1), C->D(1).
+    Node C is enqueued twice (via A at cost 2, via B at cost 2).
+    When the second C is popped, it hits line 63 (continue).
+    """
+    pf = ArenaPathfinder()
+    pf.nodes = {"A": {}, "B": {}, "C": {}, "D": {}}
+    pf.adj_list = {
+        "A": [("B", 1, True), ("C", 2, True)],
+        "B": [("A", 1, True), ("C", 1, True)],
+        "C": [("A", 2, True), ("B", 1, True), ("D", 1, True)],
+        "D": [("C", 1, True)]
+    }
+    path, dist, exploration, pruned = pf.calculate_shortest_path("A", "D")
+    assert path == ["A", "B", "C", "D"]
+    assert dist == 3
+    # C was enqueued twice but only explored once — proves line 63 was hit
+    assert exploration.count("C") == 1

@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from typing import Optional
 from ibm_watsonx_ai.foundation_models import ModelInference
@@ -148,7 +149,13 @@ async def get_venue_graph():
     """
     Returns the strict deterministic topology (nodes and edges) for frontend visualization.
     Serves as the Single Source of Truth for the UI to render the StadiumMapVisualizer.
+    Cached for 1 hour since the stadium topology is immutable during a match.
     """
     import json
-    with open(pathfinder_engine.GRAPH_PATH if hasattr(pathfinder_engine, 'GRAPH_PATH') else os.path.join(os.path.dirname(__file__), '..', 'data', 'arena_venue_graph.json'), 'r') as f:
-        return json.load(f)
+    graph_path = pathfinder_engine.GRAPH_PATH if hasattr(pathfinder_engine, 'GRAPH_PATH') else os.path.join(os.path.dirname(__file__), '..', 'data', 'arena_venue_graph.json')
+    with open(graph_path, 'r') as f:
+        data = json.load(f)
+    return JSONResponse(
+        content=data,
+        headers={"Cache-Control": "public, max-age=3600, immutable"}
+    )
