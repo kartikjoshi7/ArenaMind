@@ -22,9 +22,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-# Environment backups
-.env.bak
-
-# Linter configs
-.oxlintrc.json

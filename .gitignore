@@ -48,3 +48,11 @@ frontend/test-results/
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/
+
+# Environment backups
+.env.bak
+*.env.bak
+
+# Linter configs
+.oxlintrc.json
+*.oxlintrc.json
