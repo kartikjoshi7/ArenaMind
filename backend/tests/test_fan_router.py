@@ -95,3 +95,19 @@ def test_venue_graph_endpoint():
     data = response.json()
     assert "nodes" in data
     assert "edges" in data
+
+@patch('backend.app.fan_services.arena_fan_router.ModelInference')
+def test_fan_g2_fallback(mock_model_inference):
+    mock_instance = MagicMock()
+    mock_instance.generate_text.side_effect = Exception("Offline")
+    mock_model_inference.return_value = mock_instance
+    response = client.post("/api/v1/fan/process-query", json={"module_type": "G2_ACCESS", "destination": "Gate", "needs": "wheelchair", "language": "English"})
+    assert response.status_code == 200
+
+@patch('backend.app.fan_services.arena_fan_router.ModelInference')
+def test_fan_g3_fallback(mock_model_inference):
+    mock_instance = MagicMock()
+    mock_instance.generate_text.side_effect = Exception("Offline")
+    mock_model_inference.return_value = mock_instance
+    response = client.post("/api/v1/fan/process-query", json={"module_type": "G3_TRANSIT", "origin": "10", "needs": "bus", "language": "English"})
+    assert response.status_code == 200

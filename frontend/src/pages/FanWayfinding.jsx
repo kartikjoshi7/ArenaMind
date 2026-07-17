@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowDownUp, Loader2 } from 'lucide-react';
+import { ArrowDownUp, Loader2, Sparkles } from 'lucide-react';
 import { processFanQuery } from '../infrastructure/arena_telemetry_gateway';
 import StadiumMapVisualizer from '../components/StadiumMapVisualizer';
 import '../ArenaControlDesk.css';
@@ -13,6 +13,17 @@ export default function FanWayfinding({ globalLanguage }) {
   const [rawPath, setRawPath] = useState([]);
   const [explorationSteps, setExplorationSteps] = useState([]);
   const [prunedEdges, setPrunedEdges] = useState([]);
+
+  const renderFormattedText = (text) => {
+    if (!text) return null;
+    const parts = text.split(/(\*\*.*?\*\*)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={index} style={{ color: 'var(--accent-cyan)', fontWeight: '700' }}>{part.slice(2, -2)}</strong>;
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
 
   const handleQuery = async () => {
     setNavLoading(true);
@@ -172,15 +183,21 @@ export default function FanWayfinding({ globalLanguage }) {
             />
           </div>
 
-          <div style={{ marginTop: '1.5rem', marginBottom: '1.5rem', padding: '1.5rem', background: 'rgba(6, 182, 212, 0.05)', borderRadius: '8px', borderLeft: '4px solid var(--accent-cyan)' }} aria-live="polite">
+          <div style={{ marginTop: '1.5rem', marginBottom: '1.5rem', padding: '1.5rem', background: 'linear-gradient(to right, rgba(6, 182, 212, 0.08), rgba(6, 182, 212, 0.02))', borderRadius: '12px', borderLeft: '4px solid var(--accent-cyan)', border: '1px solid rgba(6, 182, 212, 0.15)', boxShadow: '0 8px 16px rgba(0,0,0,0.03)', position: 'relative' }} aria-live="polite">
             {navLoading ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', color: 'var(--accent-cyan)' }}>
                 <Loader2 className="spin-anim" size={24} />
                 <span style={{ fontSize: '0.95rem' }}>Analyzing {navNeeds === 'step_free' ? 'step-free ' : ''}edges and calculating shortest path...</span>
               </div>
             ) : navResult ? (
-              <div style={{ fontSize: '0.95rem', lineHeight: '1.6', color: 'var(--text-main)' }}>
-                {navResult}
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem', color: 'var(--accent-cyan)', fontWeight: '600', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <Sparkles size={16} />
+                  <span>AI Wayfinding Assistant</span>
+                </div>
+                <div style={{ fontSize: '1.05rem', lineHeight: '1.6', color: 'var(--text-main)' }}>
+                  {renderFormattedText(navResult)}
+                </div>
               </div>
             ) : (
               <div style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>

@@ -46,3 +46,20 @@ def test_volunteer_triage_dispatcher_fallback(mock_model_inference):
     # Fallback should assign CRITICAL priority to guarantee safety
     assert data["priority_level"] == "CRITICAL"
     assert data["required_staff_role"] == "SUPERVISOR"
+
+@patch('backend.app.volunteer_ops.arena_volunteer_router.process_fan_request')
+def test_volunteer_router_internal_error(mock_process):
+    mock_process.side_effect = Exception("Router crash")
+    payload = {
+        "raw_audio_transcript": "Crash me.",
+        "location_zone": "Concession 1",
+        "detected_language": "English"
+    }
+    response = client.post("/api/v1/volunteer/process-request", json=payload)
+    assert response.status_code == 500
+
+@patch('builtins.open', side_effect=Exception("File not found"))
+def test_volunteer_router_simulate_chatter_fallback(mock_open):
+    response = client.get("/api/v1/volunteer/simulate/radio-chatter")
+    assert response.status_code == 200
+    assert response.json()["scenario"] == "Generic alert from unknown sector."
