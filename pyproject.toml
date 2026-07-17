@@ -32,7 +32,6 @@ show_missing = true
 fail_under = 100
 
 [tool.mypy]
-python_version = "3.11"
 strict = true
 warn_return_any = true
 warn_unused_configs = true
