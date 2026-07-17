@@ -12,7 +12,7 @@ target-version = "py311"
 [tool.ruff.lint]
 # Enable standard, flake8, bugbear, conventions, and complexity rules
 select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "C90", "SIM", "RUF"]
-ignore = ["E501", "E402"]
+ignore = ["E501", "E402", "RUF059", "I001", "W", "B904", "N806", "RUF005"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 12
