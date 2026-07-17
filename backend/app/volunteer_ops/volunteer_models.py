@@ -1,4 +1,4 @@
-from typing import Literal, Optional
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -15,7 +15,7 @@ class FanInteraction(BaseModel):
         ...,
         description="The literal transcribed text of the fan's spoken request."
     )
-    detected_language: Optional[str] = Field(
+    detected_language: str | None = Field(
         default=None,
         description="The detected source language, if known by the edge device (e.g., 'es', 'fr')."
     )

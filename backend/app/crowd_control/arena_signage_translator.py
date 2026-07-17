@@ -2,6 +2,7 @@ import logging
 import os
 
 from ibm_watsonx_ai.foundation_models import ModelInference
+
 from backend.app.crowd_control.sector_models import CongestionAlert
 
 logger = logging.getLogger(__name__)
@@ -24,10 +25,10 @@ async def generate_multilingual_signage(alert: CongestionAlert, target_language:
     """
     diversion_gates_str = ", ".join(alert.recommended_diversion_routes)
     cache_key = f"{alert.sector_id}_{diversion_gates_str}_{target_language}"
-    
+
     if cache_key in _SIGNAGE_CACHE:
         return _SIGNAGE_CACHE[cache_key]
-    
+
     message = f"Sector {alert.sector_id} is congested. Please proceed to: {diversion_gates_str}."
     prompt = f"""System: You are an emergency signage translation system.
 User: Translate the following emergency message into {target_language}.
@@ -37,7 +38,7 @@ STRICT RULES:
 1. Return ONLY the translated string.
 2. Do not include quotes, prefixes, or conversational text.
 Assistant:"""
-    
+
     try:
         api_key = os.environ.get("WATSONX_API_KEY")
         project_id = os.environ.get("WATSONX_API_PROJECT_ID")
@@ -60,19 +61,19 @@ Assistant:"""
                 "max_new_tokens": 100
             }
         )
-        
+
         response_text = str(model.generate_text(prompt))
-        
+
         if response_text:
             cleaned_text = response_text.strip()
             _SIGNAGE_CACHE[cache_key] = cleaned_text
             return cleaned_text
         else:
             raise ValueError("Received an empty response payload from the Watsonx model.")
-            
+
     except Exception as e:
         # Log the failure for Operations Engineering review
         logger.error(f"Signage phrasing layer failure for Alert ID {alert.alert_id}: {e}")
-        
+
         # Graceful degradation: deterministic English fallback using the alert payload
         return f"Sector {alert.sector_id} is congested. Please proceed to: {diversion_gates_str}."

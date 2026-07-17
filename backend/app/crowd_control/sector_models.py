@@ -1,5 +1,4 @@
-from datetime import datetime
-from typing import List
+from datetime import UTC, datetime
 
 from pydantic import BaseModel, Field
 
@@ -13,21 +12,21 @@ class StadiumSector(BaseModel):
     predict and mitigate localized density hazards during a live event.
     """
     sector_id: str = Field(
-        ..., 
+        ...,
         description="Unique alphanumeric identifier for the sector (e.g., 'N-104').",
         examples=["N-104"]
     )
     max_capacity: int = Field(
-        ..., 
-        gt=0, 
+        ...,
+        gt=0,
         description="Maximum mathematically safe occupancy limit determined by fire safety and ingress/egress modeling."
     )
     current_occupancy: int = Field(
-        ..., 
-        ge=0, 
+        ...,
+        ge=0,
         description="Real-time count of individuals currently detected within the sector boundaries."
     )
-    egress_gates: List[str] = Field(
+    egress_gates: list[str] = Field(
         default_factory=list,
         description="List of gate identifiers serving as egress routes for this sector."
     )
@@ -65,14 +64,14 @@ class CongestionAlert(BaseModel):
         description="Identifier of the sector experiencing the density anomaly."
     )
     timestamp: datetime = Field(
-        default_factory=datetime.utcnow,
+        default_factory=lambda: datetime.now(UTC),
         description="UTC timestamp of when the threshold breach was mathematically detected."
     )
     severity_level: str = Field(
         ...,
         description="Categorized severity of the alert ('ELEVATED', 'HIGH', 'CRITICAL')."
     )
-    recommended_diversion_routes: List[str] = Field(
+    recommended_diversion_routes: list[str] = Field(
         default_factory=list,
         description="Calculated list of alternative sectors or gates to route incoming traffic towards based on deterministic capacity simulations."
     )

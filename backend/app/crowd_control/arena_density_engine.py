@@ -1,10 +1,9 @@
 import uuid
-from typing import Optional
 
 from backend.app.crowd_control.sector_models import CongestionAlert, StadiumSector
 
 
-def evaluate_sector_status(sector: StadiumSector) -> Optional[CongestionAlert]:
+def evaluate_sector_status(sector: StadiumSector) -> CongestionAlert | None:
     """
     Deterministically evaluates the density hazard of a sector and generates an alert if thresholds are breached.
     
@@ -19,15 +18,15 @@ def evaluate_sector_status(sector: StadiumSector) -> Optional[CongestionAlert]:
         Optional[CongestionAlert]: An alert payload if the density threshold is exceeded, None otherwise.
     """
     CRITICAL_UTILIZATION_THRESHOLD = 85.0
-    
+
     if sector.capacity_utilization > CRITICAL_UTILIZATION_THRESHOLD:
-        # Deterministic logic to select alternative gates. 
+        # Deterministic logic to select alternative gates.
         # For this engine, we provide the available egress gates or a fallback.
         recommended_routes = sector.egress_gates.copy() if sector.egress_gates else ["MAIN_CONCOURSE_FALLBACK"]
-        
+
         # Determine severity based on how far past the threshold we are
         severity = "CRITICAL" if sector.capacity_utilization >= 95.0 else "HIGH"
-        
+
         # Determine if physical staff deployment is mandatory based on incoming flow rate
         requires_staff = sector.flow_rate_per_minute > 50.0
 
@@ -38,5 +37,5 @@ def evaluate_sector_status(sector: StadiumSector) -> Optional[CongestionAlert]:
             recommended_diversion_routes=recommended_routes,
             requires_staff_intervention=requires_staff
         )
-    
+
     return None

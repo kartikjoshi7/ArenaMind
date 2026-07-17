@@ -1,5 +1,5 @@
-import logging
 import json
+import logging
 import os
 import random
 
@@ -36,7 +36,7 @@ async def process_request(interaction: FanInteraction) -> ActionableTask:
         task = await process_fan_request(interaction)
         return task
     except Exception as e:
-        logger.critical(f"Critical failure routing volunteer request: {str(e)}")
+        logger.critical(f"Critical failure routing volunteer request: {e!s}")
         # API layer fallback in case of unhandled internal server failures
         raise HTTPException(status_code=500, detail="Internal server error during volunteer task processing.")
 
@@ -48,9 +48,9 @@ async def get_simulated_radio_chatter():
     """
     try:
         file_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'arena_sim_scenarios.json')
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             scenarios = json.load(f)
         return {"scenario": random.choice(scenarios)}
     except Exception as e:
-        logger.error(f"Failed to load sim scenarios: {str(e)}")
+        logger.error(f"Failed to load sim scenarios: {e!s}")
         return {"scenario": "Generic alert from unknown sector."}

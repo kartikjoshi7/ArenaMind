@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query
 
@@ -15,11 +15,11 @@ router = APIRouter(
     tags=["Crowd Operations"]
 )
 
-@router.post("/evaluate-sector", response_model=Dict[str, Any])
+@router.post("/evaluate-sector", response_model=dict[str, Any])
 async def evaluate_sector(
     sector: StadiumSector,
     target_language: str = Query("en", description="The target language for the digital signage translation (e.g., 'es', 'Spanish').")
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Ingests real-time telemetry from a physical stadium sector to evaluate structural density.
     
@@ -42,7 +42,7 @@ async def evaluate_sector(
     try:
         # Step 1: Execute the Deterministic Math Engine (Zero hallucinations)
         alert = evaluate_sector_status(sector)
-        
+
         # Step 2: Handle Nominal/Safe State
         if alert is None:
             return {
@@ -50,17 +50,17 @@ async def evaluate_sector(
                 "sector_id": sector.sector_id,
                 "message": "Sector is currently operating within safe, nominal capacity limits."
             }
-            
+
         # Step 3: Threshold Breached - Trigger AI Phrasing Layer for downstream digital signage
         signage_message = await generate_multilingual_signage(alert, target_language)
-        
+
         # Step 4: Construct the unified response payload for Venue Operations and Signage systems
         response_payload = alert.model_dump()
         response_payload["digital_signage_message"] = signage_message
-        
+
         return response_payload
 
     except Exception as e:
-        logger.critical(f"Critical systems failure in crowd operations router: {str(e)}")
+        logger.critical(f"Critical systems failure in crowd operations router: {e!s}")
         # Graceful degradation at the routing layer to ensure API stability
         raise HTTPException(status_code=500, detail="Internal server error during crowd control telemetry evaluation.")

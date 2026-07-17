@@ -4,7 +4,6 @@ import re
 
 from ibm_watsonx_ai.foundation_models import ModelInference
 
-
 from backend.app.volunteer_ops.volunteer_models import ActionableTask, FanInteraction
 
 logger = logging.getLogger(__name__)
@@ -27,7 +26,7 @@ async def process_fan_request(interaction: FanInteraction) -> ActionableTask:
     Returns:
         ActionableTask: A strictly typed, categorized operational task for stadium staff.
     """
-    
+
     # Security: Input Sanitization to prevent Prompt Injection & Token Exhaustion
     # Strip dangerous characters and enforce a hard limit of 250 chars
     sanitized_transcript = re.sub(r'[<>{}\[\]]', '', interaction.raw_audio_transcript)
@@ -74,26 +73,26 @@ Assistant:"""
                 "max_new_tokens": 150
             }
         )
-        
+
         response_text = str(model.generate_text(prompt=prompt))
-        
+
         if not response_text:
             raise ValueError("Empty response received from Watsonx.")
-            
+
         # Super simple extraction from Llama 3 output format
         json_str = response_text.replace("```json", "").replace("```", "").strip()
-            
+
         # Safely validate and parse the LLM's JSON string directly into our strict Pydantic model
         task = ActionableTask.model_validate_json(json_str)
-        
+
         # Save to cache
         _TRANSLATION_CACHE[sanitized_transcript] = task
-        
+
         return task
-        
+
     except Exception as e:
         logger.error(f"Translation desk failure at location {interaction.location_zone}: {e}")
-        
+
         # Graceful Degradation: Fallback to a critical, manual intervention state
         # This guarantees zero downtime and provides on-ground staff with an actionable physical dispatch
         return ActionableTask(

@@ -1,17 +1,19 @@
 import logging
+
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
-from pydantic_settings import BaseSettings
+from slowapi.util import get_remote_address
+
 
 class Settings(BaseSettings):
     cors_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:80", "http://localhost"]
@@ -19,18 +21,16 @@ class Settings(BaseSettings):
     watsonx_api_key: str = ""
     watsonx_api_project_id: str = ""
     watsonx_api_url: str = ""
-    
-    class Config:
-        env_file = ".env"
-        extra = "ignore"
+
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 settings = Settings()
 limiter = Limiter(key_func=get_remote_address)
 
 # Import our strictly Domain-Driven routers
 from backend.app.crowd_control.arena_crowd_router import router as crowd_router
-from backend.app.volunteer_ops.arena_volunteer_router import router as volunteer_router
 from backend.app.fan_services.arena_fan_router import router as fan_router
+from backend.app.volunteer_ops.arena_volunteer_router import router as volunteer_router
 
 # Configure base logging for the application
 logging.basicConfig(
@@ -88,8 +88,8 @@ app.include_router(volunteer_router)
 app.include_router(fan_router)
 
 
-@app.api_route("/health", methods=["GET", "HEAD"], response_model=Dict[str, Any], tags=["System Operations"])
-async def health_check() -> Dict[str, Any]:
+@app.api_route("/health", methods=["GET", "HEAD"], response_model=dict[str, Any], tags=["System Operations"])
+async def health_check() -> dict[str, Any]:
     """
     Primary system telemetry endpoint utilized by deployment load balancers 
     and infrastructure orchestrators to verify venue software stability.
