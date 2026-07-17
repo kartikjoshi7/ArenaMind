@@ -55,7 +55,7 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler) # type: ignore
 
 @app.exception_handler(Exception)
-async def global_exception_handler(request: Request, exc: Exception):
+async def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """Fail-closed fallback: Never leak Python stack traces."""
     return JSONResponse(
         status_code=502,
@@ -73,7 +73,7 @@ app.add_middleware(
 
 # Security Headers Middleware — production-grade hardening
 @app.middleware("http")
-async def add_security_headers(request: Request, call_next):
+async def add_security_headers(request: Request, call_next: Any) -> Any:
     """Injects security headers into every response to prevent XSS, clickjacking, and MIME sniffing."""
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
@@ -91,9 +91,9 @@ app.include_router(fan_router)
 @app.api_route("/health", methods=["GET", "HEAD"], response_model=dict[str, Any], tags=["System Operations"])
 async def health_check() -> dict[str, Any]:
     """
-    Primary system telemetry endpoint utilized by deployment load balancers 
+    Primary system telemetry endpoint utilized by deployment load balancers
     and infrastructure orchestrators to verify venue software stability.
-    
+
     Returns:
         dict: A nominal status payload verifying the core ArenaMind infrastructure is operational.
     """

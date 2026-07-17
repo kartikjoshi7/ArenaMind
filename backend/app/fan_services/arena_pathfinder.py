@@ -1,16 +1,17 @@
 import heapq
 import json
 import os
+from typing import Any
 
 GRAPH_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'arena_venue_graph.json')
 
 class ArenaPathfinder:
-    def __init__(self):
-        self.nodes = {}
-        self.adj_list = {}
+    def __init__(self) -> None:
+        self.nodes: dict[str, Any] = {}
+        self.adj_list: dict[str, Any] = {}
         self._load_graph()
 
-    def _load_graph(self):
+    def _load_graph(self) -> None:
         try:
             with open(GRAPH_PATH) as f:
                 data = json.load(f)
@@ -74,6 +75,6 @@ class ArenaPathfinder:
                             pruned_edges.append({"source": curr_node, "target": neighbor})
                         continue
 
-                    heapq.heappush(pq, (curr_dist + weight, neighbor, path + [neighbor]))
+                    heapq.heappush(pq, (curr_dist + weight, neighbor, [*path, neighbor]))
 
         return [], 0, exploration_history, pruned_edges # No path found

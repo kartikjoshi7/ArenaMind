@@ -1,8 +1,10 @@
+from unittest.mock import MagicMock, patch
+
 from fastapi.testclient import TestClient
-from unittest.mock import patch, MagicMock
-from backend.arena_server import app
+
 from backend.app.crowd_control.sector_models import StadiumSector
 from backend.app.fan_services.arena_pathfinder import ArenaPathfinder
+from backend.arena_server import app
 
 client = TestClient(app)
 
@@ -135,7 +137,7 @@ def test_pathfinder_revisit_skipping():
     pf = ArenaPathfinder()
     # A complex route that forces Dijkstra to encounter already-visited nodes
     # Gate North -> Section 101 involves multiple hops through the graph
-    path, dist, exploration, pruned = pf.calculate_shortest_path("Gate North", "Section 102")
+    path, dist, exploration, _pruned = pf.calculate_shortest_path("Gate North", "Section 102")
     assert len(path) > 0
     assert dist > 0
     # Verify that the exploration history has no duplicates (proves line 63 was hit)

@@ -6,9 +6,9 @@ from pydantic import BaseModel, Field
 class StadiumSector(BaseModel):
     """
     Operational data model representing a specific physical sector within the venue.
-    
-    This model defines the spatial characteristics, real-time occupancy metrics, 
-    and flow rate parameters necessary for deterministic crowd control systems to 
+
+    This model defines the spatial characteristics, real-time occupancy metrics,
+    and flow rate parameters necessary for deterministic crowd control systems to
     predict and mitigate localized density hazards during a live event.
     """
     sector_id: str = Field(
@@ -39,7 +39,7 @@ class StadiumSector(BaseModel):
     def capacity_utilization(self) -> float:
         """
         Calculates the current capacity utilization ratio.
-        
+
         Returns:
             float: A percentage representing the utilization of the sector's maximum capacity.
         """
@@ -51,8 +51,8 @@ class StadiumSector(BaseModel):
 class CongestionAlert(BaseModel):
     """
     High-priority alert payload generated when a StadiumSector approaches or exceeds safe operational density limits.
-    
-    This payload is consumed by downstream routing logic to initiate deterministic crowd diversion protocols 
+
+    This payload is consumed by downstream routing logic to initiate deterministic crowd diversion protocols
     and subsequently by the AI phrasing layer to generate localized, natural-language multilingual signage updates.
     """
     alert_id: str = Field(

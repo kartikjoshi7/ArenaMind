@@ -1,5 +1,7 @@
+from unittest.mock import MagicMock, patch
+
 from fastapi.testclient import TestClient
-from unittest.mock import patch, MagicMock
+
 from backend.arena_server import app
 
 client = TestClient(app)
@@ -21,7 +23,7 @@ def test_simulate_density_critical(mock_model_inference):
     response = client.post("/api/v1/crowd/evaluate-sector?target_language=en", json=payload)
     assert response.status_code == 200
     data = response.json()
-    
+
     assert data["sector_id"] == "Gate North"
     assert data["severity_level"] == "HIGH" or data["severity_level"] == "CRITICAL"
     assert "WARNING" in data["digital_signage_message"]
@@ -39,7 +41,7 @@ def test_simulate_density_nominal(mock_model_inference):
     response = client.post("/api/v1/crowd/evaluate-sector?target_language=en", json=payload)
     assert response.status_code == 200
     data = response.json()
-    
+
     assert data["sector_id"] == "Gate North"
     assert data["status"] == "safe"
 

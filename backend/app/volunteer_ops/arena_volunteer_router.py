@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import random
+from typing import Any
 
 from fastapi import APIRouter, HTTPException
 
@@ -20,14 +21,14 @@ router = APIRouter(
 async def process_request(interaction: FanInteraction) -> ActionableTask:
     """
     Ingests multilingual fan requests and deterministically routes them to on-ground staff.
-    
+
     This endpoint acts as the primary triage interface for physical venue kiosks and volunteer radios.
-    It passes the raw audio transcript to the AI translation desk to be translated into English, 
+    It passes the raw audio transcript to the AI translation desk to be translated into English,
     assigned a severity priority, and routed to the correct operational unit (e.g., MEDICAL, SECURITY).
-    
+
     Args:
         interaction (FanInteraction): The raw interaction payload, containing the transcript and location data.
-        
+
     Returns:
         ActionableTask: A strictly formatted, English-language dispatch ticket ready for stadium staff execution.
     """
@@ -38,10 +39,10 @@ async def process_request(interaction: FanInteraction) -> ActionableTask:
     except Exception as e:
         logger.critical(f"Critical failure routing volunteer request: {e!s}")
         # API layer fallback in case of unhandled internal server failures
-        raise HTTPException(status_code=500, detail="Internal server error during volunteer task processing.")
+        raise HTTPException(status_code=500, detail="Internal server error during volunteer task processing.") from e
 
 @router.get("/simulate/radio-chatter")
-async def get_simulated_radio_chatter():
+async def get_simulated_radio_chatter() -> dict[str, Any]:
     """
     Returns a random mock radio transmission for the frontend Auto-Pilot simulation.
     Reads from the JSON file to keep the React frontend 100% 'dumb' and avoid AST scanners.

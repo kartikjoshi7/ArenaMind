@@ -22,19 +22,19 @@ async def evaluate_sector(
 ) -> dict[str, Any]:
     """
     Ingests real-time telemetry from a physical stadium sector to evaluate structural density.
-    
-    This endpoint serves as the primary webhook for physical venue IoT sensors (turnstiles, cameras). 
-    It routes the payload through a deterministic math engine to calculate if a sector's safety capacity 
-    has been breached. 
-    
-    If safe, it returns a 200 OK nominal status. If the deterministic threshold is breached, 
-    it generates a CongestionAlert and subsequently triggers the AI phrasing layer to generate 
+
+    This endpoint serves as the primary webhook for physical venue IoT sensors (turnstiles, cameras).
+    It routes the payload through a deterministic math engine to calculate if a sector's safety capacity
+    has been breached.
+
+    If safe, it returns a 200 OK nominal status. If the deterministic threshold is breached,
+    it generates a CongestionAlert and subsequently triggers the AI phrasing layer to generate
     a localized digital signage message for immediate venue broadcast.
-    
+
     Args:
         sector (StadiumSector): The real-time physical telemetry payload for the sector.
         target_language (str): The desired language for emergency broadcast translation.
-        
+
     Returns:
         dict: A JSON object containing either a nominal safe status, or a complete CongestionAlert payload
               appended with the newly generated multilingual digital signage message.
@@ -63,4 +63,4 @@ async def evaluate_sector(
     except Exception as e:
         logger.critical(f"Critical systems failure in crowd operations router: {e!s}")
         # Graceful degradation at the routing layer to ensure API stability
-        raise HTTPException(status_code=500, detail="Internal server error during crowd control telemetry evaluation.")
+        raise HTTPException(status_code=500, detail="Internal server error during crowd control telemetry evaluation.") from e

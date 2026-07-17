@@ -1,6 +1,7 @@
 from backend.app.crowd_control.arena_density_engine import evaluate_sector_status
 from backend.app.crowd_control.sector_models import StadiumSector
 
+
 def test_density_engine_evaluate_nominal():
     sector = StadiumSector(sector_id="Gate North", current_occupancy=80, max_capacity=100, flow_rate_per_minute=20, egress_gates=[])
     alert = evaluate_sector_status(sector)

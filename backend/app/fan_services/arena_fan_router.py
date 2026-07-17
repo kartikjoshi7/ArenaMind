@@ -1,6 +1,7 @@
 import json
 import os
 import re
+from typing import Any
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
@@ -25,10 +26,10 @@ class FanResponse(BaseModel):
     structured_content: str
     raw_path: list[str] = []
     exploration_steps: list[str] = []
-    pruned_edges: list[dict] = []
+    pruned_edges: list[dict[str, Any]] = []
 
 @router.post("/process-query", response_model=FanResponse)
-async def process_fan_query(query: FanQuery):
+async def process_fan_query(query: FanQuery) -> FanResponse:
     """
     Unified endpoint for Fan Portal interactions.
     Applies deterministic math first (Dijkstra), then translates via GenAI.
@@ -147,7 +148,7 @@ async def process_fan_query(query: FanQuery):
 
 # End of file (Forces Uvicorn reload to pick up new text format)
 @router.get("/venue-graph")
-async def get_venue_graph():
+async def get_venue_graph() -> JSONResponse:
     """
     Returns the strict deterministic topology (nodes and edges) for frontend visualization.
     Serves as the Single Source of Truth for the UI to render the StadiumMapVisualizer.

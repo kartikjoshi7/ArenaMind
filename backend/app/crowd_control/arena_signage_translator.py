@@ -13,13 +13,13 @@ _SIGNAGE_CACHE: dict[str, str] = {}
 async def generate_multilingual_signage(alert: CongestionAlert, target_language: str) -> str:
     """
     Acts as the AI phrasing layer for the digital signage system.
-    Translates a deterministic CongestionAlert into a natural language, multilingual 
+    Translates a deterministic CongestionAlert into a natural language, multilingual
     signage message using Gemini, with a strict graceful degradation mechanism.
-    
+
     Args:
         alert (CongestionAlert): The deterministic payload containing congestion details and routing logic.
         target_language (str): The requested language for the signage output (e.g., 'Spanish', 'Japanese').
-        
+
     Returns:
         str: A translated, maximum 150-character string for display on digital stadium boards.
     """

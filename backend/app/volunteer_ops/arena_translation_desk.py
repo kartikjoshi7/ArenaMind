@@ -14,15 +14,15 @@ _TRANSLATION_CACHE: dict[str, ActionableTask] = {}
 async def process_fan_request(interaction: FanInteraction) -> ActionableTask:
     """
     Acts as the AI triage dispatcher for venue volunteers.
-    
-    Translates raw, multilingual fan requests into actionable English summaries and 
+
+    Translates raw, multilingual fan requests into actionable English summaries and
     assigns them to specific operational units with calculated priority levels.
-    Enforces a strict JSON output schema to ensure compatibility with deterministic 
+    Enforces a strict JSON output schema to ensure compatibility with deterministic
     downstream routing logic.
-    
+
     Args:
         interaction (FanInteraction): The raw data payload from a fan interaction.
-        
+
     Returns:
         ActionableTask: A strictly typed, categorized operational task for stadium staff.
     """

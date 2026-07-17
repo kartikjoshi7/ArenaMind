@@ -1,5 +1,7 @@
 import pytest
+
 from backend.app.fan_services.arena_pathfinder import ArenaPathfinder
+
 
 @pytest.fixture
 def pathfinder():
@@ -16,7 +18,7 @@ def pathfinder():
 
 def test_calculate_shortest_path_normal(pathfinder):
     path, distance, exploration, pruned = pathfinder.calculate_shortest_path("Gate North", "Section 101", requires_step_free=False)
-    
+
     assert path == ["Gate North", "Concourse A", "Section 101"]
     assert distance == 80
     assert len(exploration) > 0
@@ -24,8 +26,8 @@ def test_calculate_shortest_path_normal(pathfinder):
 
 def test_calculate_shortest_path_step_free(pathfinder):
     # If requires_step_free is True, the edge between Gate North and VIP Lounge (False) is pruned
-    path, distance, exploration, pruned = pathfinder.calculate_shortest_path("Gate North", "VIP Lounge", requires_step_free=True)
-    
+    path, distance, _exploration, pruned = pathfinder.calculate_shortest_path("Gate North", "VIP Lounge", requires_step_free=True)
+
     # Actually, VIP Lounge has NO step_free paths connecting to it in our mock
     # So the path should be empty
     assert path == []
@@ -34,21 +36,21 @@ def test_calculate_shortest_path_step_free(pathfinder):
     assert {"source": "Gate North", "target": "VIP Lounge"} in pruned or {"source": "VIP Lounge", "target": "Gate North"} in pruned
 
 def test_calculate_shortest_path_invalid_nodes(pathfinder):
-    path, distance, exploration, pruned = pathfinder.calculate_shortest_path("Invalid Node", "Section 101")
+    path, distance, _exploration, _pruned = pathfinder.calculate_shortest_path("Invalid Node", "Section 101")
     assert path == []
     assert distance == 0
 
 def test_empty_graph():
     pf = ArenaPathfinder()
     pf.adj_list = {}
-    path, distance, exploration, pruned = pf.calculate_shortest_path("Gate North", "Section 101")
+    path, distance, _exploration, _pruned = pf.calculate_shortest_path("Gate North", "Section 101")
     assert path == []
     assert distance == 0
 
 def test_visited_node_loop(pathfinder):
     # Artificially add a loop where a node might be re-evaluated to hit line 63
     pathfinder.adj_list["Gate North"].append(("Gate North", 5, True))
-    path, dist, expl, pruned = pathfinder.calculate_shortest_path("Gate North", "Section 101")
+    path, _dist, _expl, _pruned = pathfinder.calculate_shortest_path("Gate North", "Section 101")
     assert "Gate North" in path
 
 def test_graph_file_not_found():
@@ -71,7 +73,7 @@ def test_dijkstra_visited_node_skip():
         "C": [("A", 2, True), ("B", 1, True), ("D", 1, True)],
         "D": [("C", 1, True)]
     }
-    path, dist, exploration, pruned = pf.calculate_shortest_path("A", "D")
+    path, dist, exploration, _pruned = pf.calculate_shortest_path("A", "D")
     assert path == ["A", "B", "C", "D"]
     assert dist == 3
     # C was enqueued twice but only explored once — proves line 63 was hit

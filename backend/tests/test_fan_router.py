@@ -1,5 +1,7 @@
+from unittest.mock import MagicMock, patch
+
 from fastapi.testclient import TestClient
-from unittest.mock import patch, MagicMock
+
 from backend.arena_server import app
 
 client = TestClient(app)
@@ -49,7 +51,7 @@ def test_fan_wayfinding_fallback_on_llm_failure(mock_model_inference):
         "language": "English"
     }
     response = client.post("/api/v1/fan/process-query", json=payload)
-    
+
     # Graceful degradation should return 200 with fallback math logic
     assert response.status_code == 200
     data = response.json()

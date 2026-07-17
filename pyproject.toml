@@ -12,7 +12,7 @@ target-version = "py311"
 [tool.ruff.lint]
 # Enable standard, flake8, bugbear, conventions, and complexity rules
 select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "C90", "SIM", "RUF"]
-ignore = ["E501", "E402", "RUF059", "I001", "W", "B904", "N806", "RUF005"]
+ignore = ["E501", "E402"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 12
@@ -32,9 +32,15 @@ show_missing = true
 fail_under = 100
 
 [tool.mypy]
+python_version = "3.11"
+strict = true
 warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "backend.tests.*"
+disallow_untyped_defs = false
 
 [tool.interrogate]
 fail-under = 100

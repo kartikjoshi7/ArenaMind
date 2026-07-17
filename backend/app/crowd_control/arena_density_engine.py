@@ -6,20 +6,20 @@ from backend.app.crowd_control.sector_models import CongestionAlert, StadiumSect
 def evaluate_sector_status(sector: StadiumSector) -> CongestionAlert | None:
     """
     Deterministically evaluates the density hazard of a sector and generates an alert if thresholds are breached.
-    
-    This function strictly avoids LLM or non-deterministic calls. If the capacity utilization 
+
+    This function strictly avoids LLM or non-deterministic calls. If the capacity utilization
     exceeds the critical threshold (85%), it algorithmically selects alternative routing paths
     from the sector's known egress gates.
-    
+
     Args:
         sector (StadiumSector): The sector data model containing real-time telemetry.
-        
+
     Returns:
         Optional[CongestionAlert]: An alert payload if the density threshold is exceeded, None otherwise.
     """
-    CRITICAL_UTILIZATION_THRESHOLD = 85.0
+    critical_utilization_threshold = 85.0
 
-    if sector.capacity_utilization > CRITICAL_UTILIZATION_THRESHOLD:
+    if sector.capacity_utilization > critical_utilization_threshold:
         # Deterministic logic to select alternative gates.
         # For this engine, we provide the available egress gates or a fallback.
         recommended_routes = sector.egress_gates.copy() if sector.egress_gates else ["MAIN_CONCOURSE_FALLBACK"]
