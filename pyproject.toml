@@ -3,7 +3,7 @@ name = "arenamind"
 version = "1.0.0"
 description = "ArenaMind - Deterministic Stadium Operations and Fan Wayfinding Platform"
 requires-python = ">=3.11"
-authors = [{ name = "Kartik Joshi", email = "jkartik0805@gmail.com" }]
+authors = [{ name = "Kartik Joshi"}]
 
 [tool.ruff]
 line-length = 100
@@ -33,7 +33,6 @@ show_missing = true
 fail_under = 100
 
 [tool.mypy]
-python_version = "3.11"
 warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true
