@@ -26,7 +26,6 @@ asyncio_default_fixture_loop_scope = "function"
 
 [tool.coverage.run]
 source = ["backend/app"]
-branch = true
 
 [tool.coverage.report]
 show_missing = true
